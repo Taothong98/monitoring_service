@@ -1,0 +1,74 @@
+version: '3.1'
+
+networks:
+  monitor-net:
+    driver: bridge
+
+services:
+
+  grafana:
+    # image: grafana/grafana:master
+    image: grafana/grafana:latest
+
+    networks:
+      - monitor-net
+    ports:
+      - 3400:3000
+    restart: unless-stopped
+    # depends_on:
+    #   - prometheus
+    # user: "1000"
+    # volumes:
+    #   - /home/serveradmin/docker_volumes/grafana:/var/lib/grafana    
+
+  node-exporter:
+    image: prom/node-exporter:latest
+
+    networks:
+      - monitor-net
+    ports:
+      - 3300:9100
+
+  prometheus:
+    image: prom/prometheus:latest
+    networks:
+      - monitor-net
+    ports:
+      - 3200:9090
+    volumes:
+      - ./prometheus.yml:/etc/prometheus/prometheus.yml
+    command: 
+      - --config.file=/etc/prometheus/prometheus.yml
+      
+
+  loki:
+    # image: grafana/loki:2.4.0
+    image: grafana/loki:latest
+
+
+    volumes:
+      - ./loki-config.yml:/etc/loki/local-config.yml
+      - /home/serveradmin/docker_volumes/loki:/etc/loki
+    ports:
+      - "3100:3100"
+
+    command: -config.file=/etc/loki/local-config.yml
+    networks:
+      - monitor-net
+
+  promtail:
+    # image: grafana/promtail:2.4.0
+    image: grafana/promtail:latest
+
+    volumes:
+      - ./promtail-config.yml:/etc/promtail/docker-config.yaml   
+      - /var/log:/var/log
+      - /home/serveradmin/docker_volumes/promtail:/etc/promtail
+    command: -config.file=/etc/promtail/docker-config.yaml
+    networks:
+      - monitor-net
+    restart: unless-stopped
+
+
+    
+    
