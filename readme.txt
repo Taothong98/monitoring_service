@@ -16,3 +16,10 @@ sudo systemctl restart docker
 https://grafana.com/docs/loki/latest/send-data/docker-driver/configuration/
 https://grafana.com/docs/agent/latest/flow/reference/components/loki.source.syslog/
 https://grafana.com/docs/loki/latest/send-data/promtail/scraping/
+
+
+
+
+
+You can download Ubuntu.ova in this link.
+https://drive.google.com/drive/folders/1R3rpqAwtG8aiG46mKOnvDT1hoQ-K4Ce0?usp=sharing
