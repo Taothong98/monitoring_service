@@ -1,0 +1,33 @@
+version: '3'
+services:
+
+  filebeat:
+    image: rapidfort/filebeat-ib:8.13.2
+    user: root
+    cap_add:
+      - SYS_PTRACE
+    volumes:
+      - "./filebeat.docker.yml:/usr/share/filebeat/filebeat.yml:ro"
+      - ./var/log/:/var/log/  
+      - ./var/log/ex.log:/var/log/ex.log  
+    command: -e --strict.perms=false
+    networks:
+      - elastic           
+
+
+  packetbeat:
+    image: rapidfort/packetbeat-ib:8.13.4
+    user: root
+    cap_add:
+      - SYS_PTRACE
+      - NET_ADMIN
+      - NET_RAW
+    volumes:
+      - "./packetbeat.docker.yml:/usr/share/packetbeat/packetbeat.yml:ro"
+    command: -e --strict.perms=false
+    networks:
+      - elastic
+
+networks:
+  elastic:
+    driver: bridge      

@@ -1,0 +1,45 @@
+version: '3'
+services:
+
+  kibana:
+    image: kibana:8.13.4
+    container_name: kibana2  
+    networks:
+      - elastic  
+    ports:
+      - 5601:5601
+    depends_on:
+      - elasticsearch 
+
+  elasticsearch:
+    image: rapidfort/elasticsearch:8.13.4
+    environment:
+      - discovery.type=single-node
+      - xpack.security.enabled=false
+      - xpack.monitoring.enabled=false
+    ports:
+      - "9200:9200"
+    networks:
+      - elastic
+
+  filebeat:
+    image: rapidfort/filebeat-ib:8.13.2
+    user: root
+    cap_add:
+      - SYS_PTRACE
+    volumes:
+      - "./filebeat.docker.yml:/usr/share/filebeat/filebeat.yml:ro"
+      - ./var/log/ex/:/var/log/ex/  
+      - ./var/log/ex/example.log:/var/log/ex/example.log  
+
+    command: -e --strict.perms=false
+    depends_on:
+      - elasticsearch
+    networks:
+      - elastic           
+
+
+
+networks:
+  elastic:
+    driver: bridge      

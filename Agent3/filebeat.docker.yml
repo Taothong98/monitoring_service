@@ -1,0 +1,24 @@
+filebeat.inputs:
+- type: log
+  enabled: true
+  paths:
+    # - /var/log/ex/*.log       
+    - /var/log/*.log      
+
+# output:
+#   elasticsearch:
+#     hosts: ["elasticsearch:9200"]
+    
+
+output.logstash:
+  # The Logstash hosts
+  # hosts: ["logstash:5044"]
+  # hosts: ["192.168.222.103:5044", "192.168.222.120:5044"]
+  hosts: ["192.168.222.103:5044"]
+
+
+
+filebeat.config:
+  modules:
+    path: ${path.config}/modules.d/*.yml
+    reload.enabled: false
