@@ -1,0 +1,85 @@
+
+
+
+
+curl -fsSL https://artifacts.elastic.co/GPG-KEY-elasticsearch |sudo gpg --dearmor -o /usr/share/keyrings/elastic.gpg
+
+echo "deb [signed-by=/usr/share/keyrings/elastic.gpg] https://artifacts.elastic.co/packages/7.x/apt stable main" | sudo tee -a /etc/apt/sources.list.d/elastic-7.x.list
+
+sudo ln -s /etc/nginx/sites-available/your_domain /etc/nginx/sites-enabled/your_domain
+
+
+sudo apt update
+
+
+sudo apt install logstash
+
+
+sudo nano /etc/logstash/conf.d/02-beats-input.conf
+
+input {
+  beats {
+    port => 5044
+  }
+}
+
+
+sudo nano /etc/logstash/conf.d/30-elasticsearch-output.conf
+
+output {
+  if [@metadata][pipeline] {
+	elasticsearch {
+  	hosts => ["localhost:9200"]
+  	manage_template => false
+  	index => "%{[@metadata][beat]}-%{[@metadata][version]}-%{+YYYY.MM.dd}"
+  	pipeline => "%{[@metadata][pipeline]}"
+	}
+  } else {
+	elasticsearch {
+  	hosts => ["localhost:9200"]
+  	manage_template => false
+  	index => "%{[@metadata][beat]}-%{[@metadata][version]}-%{+YYYY.MM.dd}"
+	}
+  }
+}
+
+
+
+sudo nano /etc/logstash/conf.d/fgt.conf
+
+input {
+  syslog {
+    port => 5044
+    codec => cef
+    syslog_field => "syslog"
+  }
+}
+
+
+output{
+
+        elasticsearch {
+        hosts => "localhost:9200"
+        data_stream => "true"
+    }
+
+}
+
+
+sudo -u logstash /usr/share/logstash/bin/logstash --path.settings /etc/logstash -t
+
+sudo systemctl start logstash
+sudo systemctl enable logstash
+
+sudo systemctl restart logstash
+
+
+
+/usr/share/logstash/bin/logstash -f /etc/logstash/conf.d/fgt.conf
+
+tail /var/log/logstash/logstash-plain.log
+
+
+
+
+

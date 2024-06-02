@@ -1,0 +1,49 @@
+version: '3'
+services:
+
+  kibana:
+    image: kibana:8.13.4
+    container_name: kibana  
+    networks:
+      - elastic  
+    ports:
+      - 5601:5601
+    depends_on:
+      - elasticsearch 
+
+  elasticsearch:
+    image: rapidfort/elasticsearch:8.13.4
+    environment:
+      - discovery.type=single-node
+      - xpack.security.enabled=false
+      - xpack.monitoring.enabled=false
+    ports:
+      - "9200:9200"
+    networks:
+      - elastic
+
+             
+  logstash:
+    image: logstash:8.13.4
+    ports:
+      - "5044:5044"
+      - "5044:5044/udp"
+    cap_add:
+      - SYS_PTRACE
+    volumes: 
+      - ./pipelines.yml:/usr/share/logstash/config/pipelines.yml
+      - ./logstash.yml:/usr/share/logstash/config/logstash.yml
+
+      - ./logstash.conf:/usr/share/logstash/pipeline/logstash.conf
+      - ./30-elasticsearch-output.conf:/etc/logstash/conf.d/30-elasticsearch-output.conf
+      - ./02-beats-input.conf:/etc/logstash/conf.d/02-beats-input.conf
+      - ./fgt.conf:/etc/logstash/conf.d/fgt.conf
+
+    depends_on:
+      - elasticsearch
+    networks:
+      - elastic
+  
+networks:
+  elastic:
+    driver: bridge      

@@ -20,8 +20,8 @@ filebeat.inputs:
 - type: log
   enabled: true
   paths:
-    # - /var/log/ex/*.log       
-    - /var/log/*.log      
+    - /var/log/ex/*.log       
+    # - /var/log/*.log      
 
 output:
   elasticsearch:
