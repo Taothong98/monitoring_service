@@ -39,7 +39,7 @@ services:
       # - ./logstash/02-beats-input.conf:/etc/logstash/conf.d/02-beats-input.conf
 
       - ./logstash.conf:/etc/logstash/conf.d/logstash.conf
-      - ./logstash-plain.log:/var/log/logstash/logstash-plain.log 
+      # - ./logstash-plain.log:/var/log/logstash/logstash-plain.log 
 
     # depends_on:
     #   - elasticsearch
