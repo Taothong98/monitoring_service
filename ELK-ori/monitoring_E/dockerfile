@@ -1,0 +1,54 @@
+FROM debian:bookworm-backports
+RUN apt-get update && apt install gnupg -y
+RUN apt install wget -y
+RUN wget -qO - https://artifacts.elastic.co/GPG-KEY-elasticsearch | gpg --dearmor -o /usr/share/keyrings/elastic-keyring.gpg
+RUN apt-get install apt-transport-https
+RUN echo "deb [signed-by=/usr/share/keyrings/elastic-keyring.gpg] https://artifacts.elastic.co/packages/8.x/apt stable main" | tee -a /etc/apt/sources.list.d/elastic-8.x.list
+RUN apt-get update && apt-get install logstash
+
+EXPOSE 9004
+
+CMD [ "logstash","-D","FOREGROUND"]
+
+# cat /etc/logstash/logstash.yml
+# cat /etc/logstash/pipelines.yml
+
+
+# docker build -t logstasht .
+# docker run --name logstash -p 9004:9004 -d logstasht
+# docker exec -it logstash bash
+
+
+
+    # apt install curl
+    # curl -o fluent-apt-source.deb https://packages.treasuredata.com/lts/5/debian/bookworm/pool/contrib/f/fluent-lts-apt-source/fluent-lts-apt-source_2023.7.29-1_all.deb
+    # chown _apt: /root/fluent-apt-source.deb    # chmod 644 /root/fluent-apt-source.deb
+    # apt install -y ./fluent-apt-source.deb
+    # apt update
+    # apt install -y fluent-package
+
+    # cat /etc/fluent/fluentd.conf
+    # cd /var/log/fluent/
+    # fluentd -v
+
+
+# docker commit fluentd fluentdt2
+
+    # service --status-all
+    # service apache2 start
+    # service mysql stop
+    # service ssh reload
+    # service ssh restart
+    # service td-agent status
+
+
+
+
+
+# docker tag testlink:latest taothong/testlink:1.0
+# docker push taothong/testlink:1
+
+
+
+
+

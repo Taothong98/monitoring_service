@@ -65,6 +65,13 @@ output{
 
 }
 
+sudo mkdir /etc/logstash/patterns.d
+
+sudo nano /etc/logstash/patterns.d/fortigate.pattern
+
+FORTIDATE %{YEAR:year}\-%{MONTHNUM:month}\-%{MONTHDAY:day}
+
+
 
 sudo -u logstash /usr/share/logstash/bin/logstash --path.settings /etc/logstash -t
 

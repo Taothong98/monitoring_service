@@ -1,0 +1,55 @@
+docker run --name mi01 -p 9200:9200 -p 9300:9300 -t elasticsearch:8.13.4
+
+-----------------------------------------------------------------------------------------------
+
+✅ Elasticsearch security features have been automatically configured!
+✅ Authentication is enabled and cluster connections are encrypted.
+
+ℹ️  Password for the elastic user (reset with `bin/elasticsearch-reset-password -u elastic`):
+  vS0=yl4zQ_ol=Y1=AEVu
+
+ℹ️  HTTP CA certificate SHA-256 fingerprint:
+  b0f2fb89f3628859c0b1545c9f6e409b5e4a69f34611dcc41b9c5196ac0d1fb1
+
+ℹ️  Configure Kibana to use this cluster:
+• Run Kibana and click the configuration link in the terminal when Kibana starts.
+• Copy the following enrollment token and paste it into Kibana in your browser (valid for the next 30 minutes):
+  eyJ2ZXIiOiI4LjEzLjMiLCJhZHIiOlsiMTcyLjE3LjAuMjo5MjAwIl0sImZnciI6ImIwZjJmYjg5ZjM2Mjg4NTljMGIxNTQ1YzlmNmU0MDliNWU0YTY5ZjM0NjExZGNjNDFiOWM1MTk2YWMwZDFmYjEiLCJrZXkiOiJxaGVBbEk4QkVyLVd0b0JiNkhFWTptRTM3Y29MbFNWT2lTbmN0ZFE5S0V3In0=
+
+ℹ️ Configure other nodes to join this cluster:
+• Copy the following enrollment token and start new Elasticsearch nodes with `bin/elasticsearch --enrollment-token <token>` (valid for the next 30 minutes):
+  eyJ2ZXIiOiI4LjEzLjMiLCJhZHIiOlsiMTcyLjE3LjAuMjo5MjAwIl0sImZnciI6ImIwZjJmYjg5ZjM2Mjg4NTljMGIxNTQ1YzlmNmU0MDliNWU0YTY5ZjM0NjExZGNjNDFiOWM1MTk2YWMwZDFmYjEiLCJrZXkiOiJyQmVBbEk4QkVyLVd0b0JiNkhFYTowb2g3bEs3WlFmMkpqTzBsTVV3UU53In0=
+
+  If you're running in Docker, copy the enrollment token and run:
+  `docker run -e "ENROLLMENT_TOKEN=<token>" docker.elastic.co/elasticsearch/elasticsearch:8.13.3`
+
+
+
+---------------------------------------------------------------------------------------------------------------
+----- เปลี่ยนรหัสผ่าน ------
+docker exec -it mi01  elasticsearch-reset-password -u elastic
+
+-----------------------------------------------
+
+
+cat /usr/share/elasticsearch/config/certs/http_ca.crt
+docker exec -it mi01 cat /usr/share/elasticsearch/config/certs/http_ca.crt
+
+curl --cacert http_ca.crt -u elastic https://localhost:9200
+docker exec -it mi01 --cacert http_ca.crt -u elastic https://localhost:9200
+
+----------------------------------------------
+
+-------- create token for kibana -------
+docker exec -it mi01 /usr/share/elasticsearch/bin/elasticsearch-create-enrollment-token -s kibana
+
+
+eyJ2ZXIiOiI4LjEzLjMiLCJhZHIiOlsiMTcyLjE3LjAuMjo5MjAwIl0sImZnciI6ImIwZjJmYjg5ZjM2Mjg4NTljMGIxNTQ1YzlmNmU0MDliNWU0YTY5ZjM0NjExZGNjNDFiOWM1MTk2YWMwZDFmYjEiLCJrZXkiOiJKSW9vbVk4QlY0bE92dFEySVh5UDptYWc4Z1lfMFJWRzZEbzh2YnZ0VVJnIn0=
+
+---------------------------------------------
+-------create container kibana ---------------
+docker run --name miki01 -p 5601:5601 -t kibana:8.13.3
+
+
+./kibana-verification-code.bat
+

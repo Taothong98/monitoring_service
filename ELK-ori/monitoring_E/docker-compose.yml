@@ -1,0 +1,68 @@
+version: '3.1'
+
+networks:
+  monitor-net:
+    driver: bridge
+
+services:
+
+  elasticsearch:
+    image: elasticsearch:8.13.3
+    container_name: elasticsearch    
+    networks:
+      - monitor-net
+    ports:
+      - 9100:9100
+    volumes:
+      - ./elasticsearch.yml:/usr/share/elasticsearch/config/elasticsearch.yml
+      - ./kibanadata:/usr/share/kibana/data        
+
+# echo "admin:`openssl passwd -apr1`" | tee -a /etc/nginx/htpasswd.users
+
+
+  kibana:
+    image: kibana:8.13.3
+    container_name: kibana  
+    networks:
+      - monitor-net      
+    ports:
+      - 5601:5601
+    depends_on:
+      - elasticsearch    
+    # environment:
+    #   - SERVERNAME=kibana
+    #   - ELASTICSEARCH_HOSTS=https://elasticsearch:9200
+    #   - ELASTICSEARCH_USERNAME=elastic
+    #   - ELASTICSEARCH_PASSWORD=passwordadmin
+    #   - ELASTICSEARCH_SSL_CERTIFICATEAUTHORITIES=config/certs/ca/ca.crt 
+    # volumes:
+    #   - ./kibanaconfig:/usr/share/kibana/config
+    #   - ./kibanadata:/usr/share/kibana/data  
+
+  logstash:
+    image: logstash:8.13.3
+    container_name: logstash  
+    networks:
+      - monitor-net      
+    ports:
+      - 5044:5044/udp
+    depends_on:
+      - elasticsearch      
+    volumes:
+      logstash.yml:/usr/share/logstash/config/logstash.yml
+      logstash.conf:/usr/share/logstash/pipeline/logstash.conf
+    command: logstash -f /usr/share/logstash/pipeline/logstash.conf         
+
+
+# docker exec -it elasticsearch /usr/share/elasticsearch/bin/elasticsearch-reset-password -u elastic --passwordadmin
+# docker exec -it elasticsearch /usr/share/elasticsearch/bin/elasticsearch-reset-password -u elastic
+# Password for the [elastic] user successfully reset.
+# New value: L*QC_Uih-RXT*lweqtBZ
+
+# docker exec -it elasticsearch /usr/share/elasticsearch/bin/elasticsearch-create-enrollment-token -s kibana
+
+# docker run --name logstash -p 5044:5044 logstash:8.13.3    
+
+# docker commit 65e83d529acf elastic8133
+# docker tag elastic8133:latest taothong/elastic8133:1.0
+    

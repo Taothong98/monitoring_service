@@ -1,5 +1,9 @@
-sudo apt install filebeat
+curl -L -O https://artifacts.elastic.co/downloads/beats/filebeat/filebeat-8.13.4-amd64.deb
+sudo dpkg -i filebeat-8.13.4-amd64.deb
 
+
+sudo service filebeat start
+sudo service filebeat enable
 
 ---------------------------------------------------------------------
 sudo nano /etc/filebeat/filebeat.yml
@@ -19,13 +23,8 @@ sudo filebeat setup --index-management -E output.logstash.enabled=false -E 'outp
 
 sudo filebeat setup -E output.logstash.enabled=false -E output.elasticsearch.hosts=['localhost:9200'] -E setup.kibana.host=localhost:5601
 
-sudo systemctl start filebeat
-
 curl -XGET 'http://localhost:9200/filebeat-*/_search?pretty'
 
-sudo su root
-
-sudo nano /etc/hosts
 
 ---------------------------------------------------------------------
 sudo filebeat modules enable system
@@ -35,16 +34,23 @@ sudo filebeat modules list
 
 sudo nano /etc/filebeat/filebeat.yml
 
-curl -L -O https://artifacts.elastic.co/downloads/beats/filebeat/filebeat-8.13.4-amd64.deb
-sudo dpkg -i filebeat-8.13.4-amd64.deb
-
 
 sudo filebeat modules enable fortinet
 
 
 sudo nano /etc/filebeat/modules.d/fortinet.yml
 
+- module: fortinet
+  firewall:
+    enabled: true
+    	var.input: udp
+    	var.syslog_host: 0.0.0.0
+    	var.syslog_port: 9004
+
+
 
 sudo filebeat setup
 sudo service filebeat start
 sudo service filebeat restart
+
+sudo service filebeat status

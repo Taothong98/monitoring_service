@@ -1,0 +1,57 @@
+inputs:
+  - id: logfile-fortinet_fortigate.log
+    type: logfile
+    data_stream:
+      dataset: fortinet_fortigate.log
+      type: logs
+    paths:
+      - /var/log/fortinet-firewall.log
+    exclude_files:
+      - \.gz$
+    tags:
+      - fortinet-fortigate
+      - fortinet-firewall
+      - forwarded
+    publisher_pipeline.disable_host: true
+    processors:
+      - add_fields:
+          target: _temp
+          fields:
+            internal_networks:
+              - private
+  - id: tcp-fortinet_fortigate.log
+    type: tcp
+    data_stream:
+      dataset: fortinet_fortigate.log
+      type: logs
+    host: 'localhost:9004'
+    tags:
+      - fortinet-fortigate
+      - fortinet-firewall
+      - forwarded
+    publisher_pipeline.disable_host: true
+    ssl: null
+    processors:
+      - add_fields:
+          target: _temp
+          fields:
+            internal_networks:
+              - private
+    framing: rfc6587
+  - id: udp-fortinet_fortigate.log
+    type: udp
+    data_stream:
+      dataset: fortinet_fortigate.log
+      type: logs
+    host: 'localhost:9004'
+    tags:
+      - fortinet-fortigate
+      - fortinet-firewall
+      - forwarded
+    publisher_pipeline.disable_host: true
+    processors:
+      - add_fields:
+          target: _temp
+          fields:
+            internal_networks:
+              - private

@@ -1,0 +1,44 @@
+FROM debian:bookworm-backports
+RUN apt update
+RUN apt install curl -y
+RUN apt install gnupg -y
+RUN curl -fsSL https://artifacts.elastic.co/GPG-KEY-elasticsearch | gpg --dearmor -o /usr/share/keyrings/elastic.gpg
+RUN echo "deb [signed-by=/usr/share/keyrings/elastic.gpg] https://artifacts.elastic.co/packages/7.x/apt stable main" | tee -a /etc/apt/sources.list.d/elastic-7.x.list
+RUN apt update
+RUN apt install logstash
+COPY start.sh /
+RUN chmod +x /start.sh
+# COPY 02-beats-input.conf /etc/logstash/conf.d/
+# COPY 30-elasticsearch-output.conf /etc/logstash/conf.d/
+COPY logstash.conf /etc/logstash/conf.d/
+CMD ["/bin/bash","-c","/start.sh"]
+EXPOSE 5044
+
+
+    # service logstash restart
+
+    # service --status-all
+    # service logstash stop    
+    # service logstash start
+    # service logstash status
+    # Usage:  {start|force-start|stop|force-start|force-stop|status|restart}
+
+
+
+
+
+# docker build -t logstash-t .
+# docker run --name logstash-t -p 5044:5044 -d logstash-t
+# docker exec -it logstash-t bash   
+
+
+
+# docker commit logstash-t logstash-image
+
+# docker tag logstash-t15:latest taothong/logstash:1.0
+# docker push taothong/logstash:1.0
+
+
+
+
+
